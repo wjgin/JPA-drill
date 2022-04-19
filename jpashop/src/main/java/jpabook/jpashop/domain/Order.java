@@ -18,14 +18,14 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    @ManyToOne  // orders 에는 하나의 member
+    @ManyToOne(fetch = FetchType.LAZY)  // orders 에는 하나의 member // fetch를 LAZY로 변경
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id") // Order을 연관관계 주인으로 설정(FK), Order에서 Delivery를 찾는 방식으로 설계
     private Delivery delivery;
 
@@ -33,4 +33,20 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus; // [ORDER, CANCEL]
+
+    // == 연관관계 편의 메서드  ==// -> 양방향 관계에서 세팅 (양쪽 세팅을 한 코드로 해결)
+    public void setMember(Member member){
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
+        delivery.setOrder(this);
+    }
 }

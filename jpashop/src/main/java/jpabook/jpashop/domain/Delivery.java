@@ -14,7 +14,8 @@ public class Delivery {
     @Column(name = "delivery_id")
     private Long id;
 
-    @OneToOne(mappedBy = "delivery")    // Delivery -> Order 조회가 아닌 Order -> Delivery 조회 방식을 선택
+    // Delivery -> Order 조회가 아닌 Order -> Delivery 조회 방식을 선택
+    @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
     private Order order;
 
     @Embedded
