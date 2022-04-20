@@ -1,0 +1,21 @@
+spring:
+# spring boot make test db env when non setting
+
+#  datasource:
+#    url: jdbc:h2:mem:test # memory h2 db for test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
