@@ -2,13 +2,16 @@ package jpabook.jpashop.domain;
 
 
 import jpabook.jpashop.domain.item.Item;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기본 생성자 protected
 public class OrderItem {
 
     @Id
@@ -28,9 +31,9 @@ public class OrderItem {
     private int orderPrice; // 주문 가격
     private int count;  // 주문 수량
 
-
+    // createOrderItem 함수로만 생성할 수 있게 기본 생성자를 막음(protected)
     //== 생성 메서드==// 할인 등의 사항이 있을 수 있으므로 만들어주는 것이 좋음
-    public OrderItem createOrderItem(Item item, int orderPrice, int count) {
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
         OrderItem orderItem = new OrderItem();
         orderItem.setItem(item);
         orderItem.setOrderPrice(orderPrice);
@@ -41,7 +44,7 @@ public class OrderItem {
     }
 
     //==비지니스 로직==//
-    public void cancel(){
+    public void cancel() {
         getItem().addStock(count);  // 재고 수량 원복
     }
 
@@ -50,7 +53,7 @@ public class OrderItem {
     /**
      * 전체 주문 가격 조회
      */
-    public int getTotalPrice(){
+    public int getTotalPrice() {
         return getOrderPrice() * getCount();
     }
 
