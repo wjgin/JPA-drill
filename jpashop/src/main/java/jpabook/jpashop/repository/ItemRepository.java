@@ -17,6 +17,7 @@ public class ItemRepository {
         if (item.getId() == null) {
             em.persist(item);
         }else { // 이미 item이 존재한다면 변경
+            // 주의! merge는 변경 감지와 달리 파라미터로 넘어온 item 값으로 모든 필드를 갱신한다.
             em.merge(item);
         }
     }
