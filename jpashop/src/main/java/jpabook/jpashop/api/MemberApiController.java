@@ -2,11 +2,10 @@ package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -24,7 +23,7 @@ public class MemberApiController {
         return new CreateMemberResponse(id);
     }
 
-    @PostMapping("api/v2/members")
+    @PostMapping("/api/v2/members")
     // 별도의 DTO를 만들어서 데이터를 바인딩 -> API 스펙에 맞게 구성할 수 있음
     public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request){
         Member member = new Member();
@@ -32,6 +31,28 @@ public class MemberApiController {
 
         Long id = memberService.join(member);
         return new CreateMemberResponse(id);
+    }
+
+    @PutMapping("/api/v2/members/{id}")
+    public UpdateMemberResponse updateMemberV2(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid UpdateMemberRequest request){
+        // update 메소드에서 findMember를 리턴 안함(return이 void): update인 command와 find인 query를 분리하기 위함(유지 보수성)
+        memberService.update(id, request.getName()); // 영속성 컨테이너에서 변화 감지로 업데이트
+        Member findMember = memberService.findOne(id);  // 업데이트 된 멤버 객체
+        return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class UpdateMemberResponse{
+        private Long id;
+        private String name;
+    }
+
+    @Data
+    static class UpdateMemberRequest{
+        private String name;
     }
 
     @Data
