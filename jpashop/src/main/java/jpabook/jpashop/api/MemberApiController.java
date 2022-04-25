@@ -9,12 +9,45 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    // entity를 모두 반환 -> eintity의 모든 정보가 노출 됨
+    @GetMapping("api/v1/members")
+    public List<Member> membersV1() {
+        return memberService.findAll();
+    }
+
+    @GetMapping("api/v2/members")
+    public Result membersV2() {
+        List<MemberDto> collect = memberService.findAll().stream()
+                .map(m -> new MemberDto(m.getName()))
+                .collect(Collectors.toList());
+        return new Result(collect);
+        // return new Result(collect.size(), collect);  // Result로 감싸면 개수를 넣는 등 새로운 필드를 넣어주기 좋음
+
+    }
+
+    // response된 json이 배열로 되지 않기 위해서 껍질을 씌움
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        // private int count; // 데이터의 개수
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
+    }
+
 
     @PostMapping("/api/v1/members")
     // 엔티티를 외부에서 바인딩 받아서 오는 스타일 -> 권장되지 않음 / 엔티티는 여러 곳에서 사용되는 존재 -> 장애 발생 확률이 높음
