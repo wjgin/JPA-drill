@@ -7,8 +7,8 @@ spring:
 
   jpa:
     hibernate:
-#      ddl-auto: create
-      ddl-auto: none  # table drop x
+      ddl-auto: create  # drop table when spring started
+#      ddl-auto: none  # table drop x
     properties:
       hibernate:
 #        show_sql: true
