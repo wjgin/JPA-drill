@@ -5,6 +5,7 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.OrderSimpleQueryDto;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,9 +64,18 @@ public class OrderSimpleApiController {
                 .collect(Collectors.toList());
     }
 
+    // dto 자체로 조회 -> select 절에서 원하는 data를 직접 선-> 에플리케이션 네트웤 용량 측면에서 우수
+    // v3와 달리 entity를 dto 변환 과정이 없기에 속도 측명에서 우수함
+    // entity를 조회한 것이 아니기에 테이블 값의 변화는 불가능, fit한 dto를 직접 제작해야함
+    // 유지 보수 측면에서 v3에 비해 떨어짐 (재 사용성이 적음)
+    // v3와 tradeoff 관계
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> orderV4(){
+        return orderRepository.findOrderDtos();
+    }
+
 
     @Data
-
     static class SimpleOrderDto {
         private Long id;
         private String name;
