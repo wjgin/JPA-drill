@@ -29,7 +29,7 @@ public class OrderSimpleApiController {
 
     // 권장되지 않는 방식
     @GetMapping("/api/v1/simple-orders")
-    public List<Order> ordersV1(){
+    public List<Order> ordersV1() {
         // 엔티티를 직접 조회하는 방법 -> 권장 x
         // 양방향 관계로 인해서 서로 조회하며 무한루프를 형성 -> @JasonIgnore 를 한쪽에 넣어줌(더 이상 조회 x)
         // 비어있는 필드(ex. Order 엔티티 안의 Member 필드)의 경우 Hibernate의 Proxy가 들어가 있음 -> json으로 바꾸기 위한 모듈 필(hibernate5Module)
@@ -44,18 +44,28 @@ public class OrderSimpleApiController {
     }
 
     @GetMapping("/api/v2/simple-orders")
-    public List<SimpleOrderDto> orderV2(){
+    public List<SimpleOrderDto> orderV2() {
 
         // ORDER 2개
         // N + 1문제 -> 1개의 쿼리 + 회원(N) + 배송(N) 쿼리 추가 됨 -> 속도 저하
         // order 1번 -> member 지연 로딩 조회 N번 -> delivery 지연 로딩 N번
         List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
         return orders.stream()
-                .map(o->new SimpleOrderDto(o))
+                .map(o -> new SimpleOrderDto(o))
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> orderV3(){
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        return orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(Collectors.toList());
+    }
+
+
     @Data
+
     static class SimpleOrderDto {
         private Long id;
         private String name;
