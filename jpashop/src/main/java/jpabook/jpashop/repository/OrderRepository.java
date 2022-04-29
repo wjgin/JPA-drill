@@ -80,4 +80,27 @@ public class OrderRepository {
                         " join o.delivery d", OrderSimpleQueryDto.class)
                 .getResultList();
     }
+
+    public List<Order> findAllWithItem() {
+        // Order와 OrderItems는 oneToMany -> paging이 안된
+        return em.createQuery(
+                "select distinct o from Order o" +  // distinct: item 개수 만큼 중복되는 order 제거
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
+
+    // ToOne 관계는 join fetch를 이용하여 최적화
+    // ToMany 관계는 batch_fetch_size 옵션을 통해서 최적화
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
