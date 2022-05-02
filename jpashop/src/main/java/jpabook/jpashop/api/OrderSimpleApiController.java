@@ -86,7 +86,7 @@ public class OrderSimpleApiController {
         public SimpleOrderDto(Order o) {
             this.id = o.getId();
             this.name = o.getMember().getName();    // Lazy 초기화
-            this.orderTime = o.getDateTime();
+            this.orderTime = o.getOrderDate();
             this.orderStatus = o.getOrderStatus();
             this.address = o.getMember().getAddress();  // Lazy 초기화
         }

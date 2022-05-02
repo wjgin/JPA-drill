@@ -32,7 +32,7 @@ public class Order {
     @JoinColumn(name = "delivery_id") // Order을 연관관계 주인으로 설정(FK), Order에서 Delivery를 찾는 방식으로 설계
     private Delivery delivery;
 
-    private LocalDateTime dateTime;
+    private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus; // [ORDER, CANCEL]
@@ -61,7 +61,7 @@ public class Order {
         for (OrderItem orderItem : orderItems) {
             order.addOrderItem(orderItem);
         }
-        order.setDateTime(LocalDateTime.now());
+        order.setOrderDate(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.ORDER);
         return order;
     }

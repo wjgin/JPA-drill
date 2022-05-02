@@ -6,6 +6,7 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
 import lombok.AllArgsConstructor;
@@ -79,6 +80,18 @@ public class OrderApiController {
         return orderQueryRepository.findAllByDto_optimization();
     }
 
+    /**
+     * 필요한 데이터를 모두 가진 dto를 가져와 모두 join 후 검색 -> query 1번
+     * 단점:
+     * v5보다 느릴 수 있음
+     * 중복된 data 생성 -> 필요시 메모리에서 필요한 정보를 따로 저장
+     * 페이징이 어려움(join 특성상 더 많은 데이터기준 row 증가)
+     */
+    @GetMapping("/api/v6/orders")
+    public List<OrderFlatDto> orderV6(){
+        return orderQueryRepository.findAllByDto_flat();
+    }
+
     @Getter
     static class OrderDto {
          private Long orderId;
@@ -92,7 +105,7 @@ public class OrderApiController {
          public OrderDto(Order order){
              orderId = order.getId();
              name = order.getMember().getName();
-             orderDate = order.getDateTime();
+             orderDate = order.getOrderDate();
              orderStatus = order.getOrderStatus();
              address = order.getDelivery().getAddress();
              order.getOrderItems().stream().forEach(o -> o.getItem().getName());    // Lazy 초기화
